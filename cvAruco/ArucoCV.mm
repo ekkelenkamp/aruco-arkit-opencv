@@ -18,6 +18,7 @@
 #import <SceneKit/SceneKit.h>
 #import <CoreVideo/CoreVideo.h>
 #import "SKWorldTransform.h"
+#include <opencv2/core/cvstd.hpp>
 
 #import "ArucoCV.h"
 
@@ -41,7 +42,35 @@ static cv::Mat rotateRodriques(cv::Mat &rotMat, cv::Vec3d &tvecs) {
 
 static void detect(std::vector<std::vector<cv::Point2f> > &corners, std::vector<int> &ids, CVPixelBufferRef pixelBuffer) {
     // Defineer de markers:
-    cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+
+    cv::Ptr<cv::aruco::Dictionary> dictionary = cv::makePtr<cv::aruco::Dictionary>();
+
+    //cv::aruco::Dictionary dictionary;
+    // markers of 3x3 bits
+    dictionary->markerSize = 3;
+//    // maximum number of bit corrections
+    dictionary->maxCorrectionBits = 0;
+
+    unsigned char data[3][3] = { {0,1,0},{0,1,1},{1,1,0} };
+    cv::Mat markerBits = cv::Mat(3, 3, CV_8UC1, data);
+    cv::Mat markerCompressed = cv::aruco::Dictionary::getByteListFromBits(markerBits);
+    dictionary->bytesList.push_back(markerCompressed);
+
+    unsigned char data2[3][3] = { {0,1,1},{1,1,0},{0,0,0} };
+    cv::Mat markerBits2 = cv::Mat(3, 3, CV_8UC1, data2);
+    cv::Mat markerCompressed2 = cv::aruco::Dictionary::getByteListFromBits(markerBits2);
+    dictionary->bytesList.push_back(markerCompressed2);
+
+    unsigned char data3[3][3] = { {1,1,1},{1,1,0},{0,0,0} };
+    cv::Mat markerBits3 = cv::Mat(3, 3, CV_8UC1, data3);
+    cv::Mat markerCompressed3 = cv::aruco::Dictionary::getByteListFromBits(markerBits3);
+    dictionary->bytesList.push_back(markerCompressed3);
+
+    unsigned char data4[3][3] = { {0,1,1},{1,1,1},{0,0,1} };
+    cv::Mat markerBits4 = cv::Mat(3, 3, CV_8UC1, data4);
+    cv::Mat markerCompressed4 = cv::aruco::Dictionary::getByteListFromBits(markerBits4);
+    dictionary->bytesList.push_back(markerCompressed4);
+
 
     // see also: https://docs.opencv.org/master/d5/dae/tutorial_aruco_detection.html
 
